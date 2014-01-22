@@ -151,7 +151,7 @@ namespace net
 	{
 		#if PLATFORM == PLATFORM_WINDOWS
 	    WSADATA WsaData;
-		return WSAStartup( MAKEWORD(2,2), &WsaData ) != NO_ERROR;
+		return WSAStartup( MAKEWORD(2,2), &WsaData ) == NO_ERROR;
 		#else
 		return true;
 		#endif
@@ -441,7 +441,8 @@ namespace net
 			assert( running );
 			if ( address.GetAddress() == 0 )
 				return false;
-			unsigned char packet[size+4];
+			//unsigned char packet[size+4];
+			unsigned char *packet = (unsigned char*)malloc((size+4)*sizeof(unsigned char));
 			packet[0] = (unsigned char) ( protocolId >> 24 );
 			packet[1] = (unsigned char) ( ( protocolId >> 16 ) & 0xFF );
 			packet[2] = (unsigned char) ( ( protocolId >> 8 ) & 0xFF );
@@ -453,7 +454,8 @@ namespace net
 		virtual int ReceivePacket( unsigned char data[], int size )
 		{
 			assert( running );
-			unsigned char packet[size+4];
+			//unsigned char packet[size+4];
+			unsigned char *packet = (unsigned char*)malloc((size+4)*sizeof(unsigned char));
 			Address sender;
 			int bytes_read = socket.Receive( sender, packet, size + 4 );
 			if ( bytes_read == 0 )
@@ -960,7 +962,8 @@ namespace net
 			}
 			#endif
 			const int header = 12;
-			unsigned char packet[header+size];
+			//unsigned char packet[header+size];
+			unsigned char *packet = (unsigned char*)malloc((header+size)*sizeof(unsigned char));
 			unsigned int seq = reliabilitySystem.GetLocalSequence();
 			unsigned int ack = reliabilitySystem.GetRemoteSequence();
 			unsigned int ack_bits = reliabilitySystem.GenerateAckBits();
@@ -977,7 +980,8 @@ namespace net
 			const int header = 12;
 			if ( size <= header )
 				return false;
-			unsigned char packet[header+size];
+			//unsigned char packet[header+size];
+			unsigned char *packet = (unsigned char*)malloc((header+size)*sizeof(unsigned char));
 			int received_bytes = Connection::ReceivePacket( packet, size + header );
 			if ( received_bytes == 0 )
 				return false;
